@@ -246,15 +246,15 @@ static uint32_t frame_scan_line = 0;
 static uint32_t frame_prepared_line = 0xFFFFFFFF;
 
 // These are prepared frame scan line
-uint32_t frame_line_bits[VGA_NUM_COLS];
+uint32_t frame_line_bits[24];
 
-inline static void vga_prepare_line(uint32_t line) {
+inline static void vga_prepare_line(uint32_t line, int part) {
 	static const uint32_t* char_defs = NULL;
 	static uint8_t* char_indexes = NULL;
 
-	if (frame_prepared_line == line) {
-		return;
-	}
+	/* if (frame_prepared_line == line) { */
+	/* 	return; */
+	/* } */
 
 	char_defs    = vga_character_defs[line & CHAR_HEIGHT_MASK]; // point to fixed array of scan line words
 	char_indexes = vga_screen_chars[line >> CHAR_HEIGHT_BITS];  // point to array of character codes (text line)
@@ -304,29 +304,31 @@ inline static void vga_prepare_line(uint32_t line) {
 	frame_line_bits[30] = char_defs[char_indexes[30] & CHARS_COUNT_MASK] ^ (vga_cursor_pos.col == 30 ? MASK : 0);
 	#endif
 	#else
-	frame_line_bits[ 0] = char_defs[char_indexes[ 0] & CHARS_COUNT_MASK];
-	frame_line_bits[ 1] = char_defs[char_indexes[ 1] & CHARS_COUNT_MASK];
-	frame_line_bits[ 2] = char_defs[char_indexes[ 2] & CHARS_COUNT_MASK];
-	frame_line_bits[ 3] = char_defs[char_indexes[ 3] & CHARS_COUNT_MASK];
-	frame_line_bits[ 4] = char_defs[char_indexes[ 4] & CHARS_COUNT_MASK];
-	frame_line_bits[ 5] = char_defs[char_indexes[ 5] & CHARS_COUNT_MASK];
-	frame_line_bits[ 6] = char_defs[char_indexes[ 6] & CHARS_COUNT_MASK];
-	frame_line_bits[ 7] = char_defs[char_indexes[ 7] & CHARS_COUNT_MASK];
-	frame_line_bits[ 8] = char_defs[char_indexes[ 8] & CHARS_COUNT_MASK];
-	frame_line_bits[ 9] = char_defs[char_indexes[ 9] & CHARS_COUNT_MASK];
-	frame_line_bits[10] = char_defs[char_indexes[10] & CHARS_COUNT_MASK];
-	frame_line_bits[11] = char_defs[char_indexes[11] & CHARS_COUNT_MASK];
-	frame_line_bits[12] = char_defs[char_indexes[12] & CHARS_COUNT_MASK];
-	frame_line_bits[13] = char_defs[char_indexes[13] & CHARS_COUNT_MASK];
-	frame_line_bits[14] = char_defs[char_indexes[14] & CHARS_COUNT_MASK];
-	frame_line_bits[15] = char_defs[char_indexes[15] & CHARS_COUNT_MASK];
-	frame_line_bits[16] = char_defs[char_indexes[16] & CHARS_COUNT_MASK];
-	frame_line_bits[17] = char_defs[char_indexes[17] & CHARS_COUNT_MASK];
-	frame_line_bits[18] = char_defs[char_indexes[18] & CHARS_COUNT_MASK];
-	frame_line_bits[19] = char_defs[char_indexes[19] & CHARS_COUNT_MASK];
-	frame_line_bits[20] = char_defs[char_indexes[20] & CHARS_COUNT_MASK];
-	frame_line_bits[21] = char_defs[char_indexes[21] & CHARS_COUNT_MASK];
-	frame_line_bits[22] = char_defs[char_indexes[22] & CHARS_COUNT_MASK];
+	int offset = part * 6;
+	
+	frame_line_bits[offset + 0] = char_defs[char_indexes[offset + 0] & CHARS_COUNT_MASK];
+	frame_line_bits[offset + 1] = char_defs[char_indexes[offset + 1] & CHARS_COUNT_MASK];
+	frame_line_bits[offset + 2] = char_defs[char_indexes[offset + 2] & CHARS_COUNT_MASK];
+	frame_line_bits[offset + 3] = char_defs[char_indexes[offset + 3] & CHARS_COUNT_MASK];
+	frame_line_bits[offset + 4] = char_defs[char_indexes[offset + 4] & CHARS_COUNT_MASK];
+	frame_line_bits[offset + 5] = char_defs[char_indexes[offset + 5] & CHARS_COUNT_MASK];
+	/* frame_line_bits[ 6] = char_defs[char_indexes[ 6] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[ 7] = char_defs[char_indexes[ 7] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[ 8] = char_defs[char_indexes[ 8] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[ 9] = char_defs[char_indexes[ 9] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[10] = char_defs[char_indexes[10] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[11] = char_defs[char_indexes[11] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[12] = char_defs[char_indexes[12] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[13] = char_defs[char_indexes[13] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[14] = char_defs[char_indexes[14] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[15] = char_defs[char_indexes[15] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[16] = char_defs[char_indexes[16] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[17] = char_defs[char_indexes[17] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[18] = char_defs[char_indexes[18] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[19] = char_defs[char_indexes[19] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[20] = char_defs[char_indexes[20] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[21] = char_defs[char_indexes[21] & CHARS_COUNT_MASK]; */
+	/* frame_line_bits[22] = char_defs[char_indexes[22] & CHARS_COUNT_MASK]; */
 	#if VGA_NUM_COLS > 23
 	frame_line_bits[23] = char_defs[char_indexes[23] & CHARS_COUNT_MASK];
 	frame_line_bits[24] = char_defs[char_indexes[24] & CHARS_COUNT_MASK];
@@ -370,6 +372,7 @@ inline static void vga_prepare_line(uint32_t line) {
 
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void) {
+	uint32_t clk = SysTick->CNT;
 	// Hsync code
 	VGA_DATA_GPIO->BCR = VGA_DATA_PIN;
 
@@ -383,7 +386,11 @@ void TIM2_IRQHandler(void) {
 	vga_scan_line -= VGA_VBACK_PORCH;
 	if (vga_scan_line < 2) {
 		frame_scan_line = 0;
-		goto prepare;
+		vga_prepare_line(frame_scan_line, 0);
+		vga_prepare_line(frame_scan_line, 1);
+		vga_prepare_line(frame_scan_line, 2);
+		vga_prepare_line(frame_scan_line, 3);
+		goto done;
 	}
 
 	if (vga_scan_line > VGA_VACTIVE_LINES)  {
@@ -399,8 +406,14 @@ void TIM2_IRQHandler(void) {
 	frame_scan_line = (vga_scan_line >> 1);
 	#endif
 
-	waste_time(VGA_HBACK_PORCH);
-	__NOP();
+	vga_prepare_line(frame_scan_line, vga_scan_line & 3);
+	uint32_t targend = clk + 178;
+	while( ((int32_t)( SysTick->CNT - targend )) < 0 );
+	
+	//waste_time(4);
+
+	/* waste_time(VGA_HBACK_PORCH); */
+	/* __NOP(); */
 	
 	// Unroll the loop for columns and draw glyph bits
 	__asm volatile (\
@@ -444,8 +457,8 @@ void TIM2_IRQHandler(void) {
 	"c.sw   a3,4(a1)          \n" // Clear video-out pin via BCR
 	);
 
-	prepare:
-	vga_prepare_line(frame_scan_line);
+	//prepare:
+	//vga_prepare_line(frame_scan_line);
 
 	done:
 	VGA_HSYNC_TIM->INTFR = (uint16_t)(~TIM_IT_Update);
